@@ -2,13 +2,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decentralized Voting System</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
+    <title>Voter - Panel</title>
 </head>
 <body>
-
-    <!--LOGIN PART-->
     
 </body>
 <script>
@@ -22,9 +18,9 @@
             window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
             console.log("Redirected to the Vote Publisher Panel");
         }
-        else if(voter == "true") {
-            window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/voter.html';
-            console.log("Redirected to the Voter Panel");
+        else if(voter == "false") {
+            window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/login.html';
+            console.log("Redirected to the Login page");
         }
         else if(address === null){
             window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/login.html';
@@ -35,10 +31,6 @@
             console.log("Redirected to the Login Page");
         }
     };
-
-    //IF NOT LOGGED IN TO THE SYSTEM AS VOTER OR VOTE PUBLISHER
-    //OR NOT LOGGED IN
-    //THEN REDIRECT TO THE login.html
 
 </script>
 </html>
