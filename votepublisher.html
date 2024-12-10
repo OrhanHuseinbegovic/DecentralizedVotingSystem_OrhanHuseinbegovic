@@ -5,10 +5,11 @@
     <title>Vote Publisher - Panel</title>
 </head>
 <body>
-    
+    <p>LOGGED TO THE VOTE PUBLISHER PANEL</p>
 </body>
 
 <script>
+    //Check if the Vote Publisher is logged in or not!
     window.onload = function() {
         let loggedIn = localStorage.getItem("loggedIn");
         let votePublisher = localStorage.getItem("votepublisher");
@@ -19,17 +20,13 @@
             window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/login.html';
             console.log("Redirected to the Login page");
         }
-        else if(voter == "true") {
+        if(voter == "true") {
             window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/voter.html';
             console.log("Redirected to the Voter Panel");
         }
-        else if(address === null){
+        if(address === null){
             window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/login.html';
             console.log("Redirected to the Login page");
-        }
-        else{
-            window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/login.html';
-            console.log("Redirected to the Login Page");
         }
     };
 

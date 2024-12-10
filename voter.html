@@ -5,7 +5,7 @@
     <title>Voter - Panel</title>
 </head>
 <body>
-    
+    <p>LOGGED TO THE VOTER PUBLISHER PANEL</p>
 </body>
 <script>
     window.onload = function() {
@@ -18,17 +18,13 @@
             window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
             console.log("Redirected to the Vote Publisher Panel");
         }
-        else if(voter == "false") {
+        if(voter == "false") {
             window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/login.html';
             console.log("Redirected to the Login page");
         }
-        else if(address === null){
+        if(address === null){
             window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/login.html';
             console.log("Redirected to the Login page");
-        }
-        else{
-            window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/login.html';
-            console.log("Redirected to the Login Page");
         }
     };
 
