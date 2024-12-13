@@ -3,14 +3,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vote Publisher - Panel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="css/votepublisher.css">
+    <script src="js/global.js"></script>
 </head>
 <body>
-    <p>LOGGED TO THE VOTE PUBLISHER PANEL</p>
+    <p>Logged to the VOTE PUBLISHER panel</p>
+
+    <div id="main">
+        <h2>Active polls </h2>
+        <div id="activePolls"> 
+            
+        </div>
+        <h2>Pending polls </h2>
+        <div id="pendingPolls">
+            
+        </div>
+        <div id="newPolls">
+            <form id="addNewPollForm">
+                <label for="name">Voting poll name</label>
+                <input type="text" id="name" name="name" required></input>
+                <label for="time">Time for voting</label>
+                <select name="time" id="time" required>
+                    <option value="43200">12 h</option>
+                    <option value="64800">18 h</option>
+                    <option value="86400">1 day</option>
+                    <option value="172800">2 days</option>
+                    <option value="259200">3 days</option>
+                    <option value="345600">4 days</option>
+                    <option value="432000">5 days</option>
+                    <option value="518400">6 days</option>
+                    <option value="604800">7 days</option>
+                </select> 
+                <button id="addNewPollFormButton">Add a new poll</button>
+            </form>
+        </div>
+    </div>
+    <button id="seeFinishedPolls">See finished polls</button>
+    <button id="logout">Log out</button>
+    <div id="loadingSpinner" style="display: none;">
+        <img src="assets/spinner.gif" alt="Loading..." />
+    </div>
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Modal Title</h2>
+            <p>This is a simple modal popup.</p>
+        </div>
+    </div>
 </body>
 
-<script>
-    //Check if the Vote Publisher is logged in or not!
-    window.onload = function() {
+<script>    
+    //old const abi = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"addedNewUser","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_votingOptionID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newOptionCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_votePublisher","type":"address"},{"indexed":false,"internalType":"uint256","name":"_pollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newPollCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_address","type":"address"},{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newVote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"enum VotingSystem.UserType","name":"_userType","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"userLoggedIn","type":"event"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"addVotingOption","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"addresses","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"enum VotingSystem.UserType","name":"_userType","type":"uint8"}],"name":"checkAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"checkHasStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"uint256","name":"_timeLeft","type":"uint256"}],"name":"createPoll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"endVotingPolls","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getAllActivePolls","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getAllVotingOptions","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"internalType":"struct VotingSystem.VotingOption[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllVotingPolls","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"},{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getStatistics","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"internalType":"struct VotingSystem.VotingOption[]","name":"","type":"tuple[]"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"hasStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"hasVoted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"startVotingPoll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userRoles","outputs":[{"internalType":"enum VotingSystem.UserType","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"uint256","name":"_votingOptionID","type":"uint256"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"votingOptionsByPoll","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"votingPollCounterID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"votingPolls","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"stateMutability":"view","type":"function"}]
+    //old const address = "0xc1576a229f26f405da56e2397d98e887508995db";
+    const abi = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"addedNewUser","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_votingOptionID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newOptionCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_votePublisher","type":"address"},{"indexed":false,"internalType":"uint256","name":"_pollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newPollCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_address","type":"address"},{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newVote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"enum VotingSystem.UserType","name":"_userType","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"userLoggedIn","type":"event"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"addVotingOption","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"addresses","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"enum VotingSystem.UserType","name":"_userType","type":"uint8"}],"name":"checkAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"checkHasStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"uint256","name":"_timeLeft","type":"uint256"}],"name":"createPoll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"endVotingPolls","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getAllActivePollsVOTER","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllActivePollsVP","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllFinishedPollsVP","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllPendingPollsVP","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getAllVotingOptions","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"internalType":"struct VotingSystem.VotingOption[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getPolls","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getStatistics","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"internalType":"struct VotingSystem.VotingOption[]","name":"","type":"tuple[]"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"hasStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"hasVoted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"isPublisher","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"startVotingPoll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userRoles","outputs":[{"internalType":"enum VotingSystem.UserType","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"uint256","name":"_votingOptionID","type":"uint256"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"votingOptionsByPoll","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"votingPollCounterID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"votingPolls","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"stateMutability":"view","type":"function"}]
+    const address = "0x1319d4d396f01d7d98daa3cb4c49caa93a628a33";
+
+    function checkLogin(){
         let loggedIn = localStorage.getItem("loggedIn");
         let votePublisher = localStorage.getItem("votepublisher");
         let voter = localStorage.getItem("voter");
@@ -28,7 +83,149 @@
             window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/login.html';
             console.log("Redirected to the Login page");
         }
-    };
+    }
+
+    //Check if the Vote Publisher is logged in or not!
+    window.onload = function() {
+        checkLogin();
+        getAllVotingPolls()
+    };  
+
+    $("#logout").click( function() {
+        localStorage.setItem("loggedIn","false");
+        localStorage.setItem("voter","false");
+        localStorage.setItem("votepublisher", "false");
+        localStorage.setItem("address", "null");
+        checkLogin();
+    });
+
+
+
+    $("#addNewPollFormButton").click(async function (event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Show the spinner
+        $("#loadingSpinner").show();
+
+        try {
+            window.signer = await window.provider.getSigner();
+            const contract = new ethers.Contract(address, abi, window.signer);
+
+            const pollName = document.getElementById('name').value;
+            const pollTime = document.getElementById('time').value;
+
+            await contract.createPoll(pollName, pollTime);
+
+            toastr.success("Poll created successfully!", "Success");
+
+            // Fetch and display all voting polls
+            getAllVotingPolls();
+        } catch (error) {
+            console.error("Error creating poll:", error);
+            toastr.error("Failed to create poll. Please try again.", "Error");
+        } finally {
+            // Hide the spinner
+            $("#loadingSpinner").hide();
+        }
+    });
+
+
+    $("#viewVotingPoll").click(async function (event){
+
+    });
+
+    async function getAllVotingPolls(){
+        $("#loadingSpinner").show();
+        window.signer = await window.provider.getSigner();
+        const contract = new ethers.Contract(address, abi, window.signer);
+
+        let activeVotingPolls = await contract.getAllActivePollsVP();
+        let pendingVotingPolls = await contract.getAllPendingPollsVP();
+        console.log(activeVotingPolls);
+        console.log(pendingVotingPolls);
+        let active = '';
+        let pending = '';
+
+        for (const [id, title, creatorAddress, endTimestamp, status] of activeVotingPolls) {
+            active += `
+                <p>
+                    <b>${title} (ID: ${id})</b>
+                    <br />
+                    Created by: ${creatorAddress}
+                    <br />
+                    Status: ${status === 0 ? 'Active' : 'Pending'}
+                    <br />
+                    <button class="viewButton" data-id="${id}">View</button>
+                </p>
+            `;
+        }
+
+        for (const [id, title, creatorAddress, endTimestamp, status] of pendingVotingPolls) {
+            pending += `
+                <p>
+                    <b>${title} (ID: ${id})</b>
+                    <br />
+                    Created by: ${creatorAddress}
+                    <br />
+                    Status: ${status === 0 ? 'Active' : 'Pending'}
+                    <br />
+                    <button class="viewButton" data-id="${id}">View</button>
+                </p>
+            `;
+        }
+
+        
+
+        $('#activePolls').html(active);
+        $('#pendingPolls').html(pending);
+        console.log("Data displayed!");
+        $("#loadingSpinner").hide();
+    }
+    
+
+    /*
+    async function getAllVotingPolls() {
+        try {
+            window.signer = await window.provider.getSigner();
+            const contract = new ethers.Contract(address, abi, window.signer);
+
+            const [activePolls, finishedPolls] = await contract.getAllVotingPolls();
+
+            console.log('Active Polls:', activePolls);
+            console.log('Finished Polls:', finishedPolls);
+
+            let activeContent = '';
+            for (const poll of activePolls) {
+                console.log('Processing Active Poll:', poll);
+                activeContent += `
+                    <p>
+                        <b>${poll.name}</b>
+                        <br />
+                        <button id="viewButton-${poll.id}">View</button>
+                    </p>
+                `;
+            }
+            document.getElementById('activePolls').innerHTML = activeContent;
+
+            let finishedContent = '';
+            for (const poll of finishedPolls) {
+                console.log('Processing Finished Poll:', poll);
+                finishedContent += `
+                    <p>
+                        <b>${poll.name}</b>
+                        <br />
+                        <button id="viewButton-${poll.id}">View</button>
+                    </p>
+                `;
+            }
+            document.getElementById('finishedPolls').innerHTML = finishedContent;
+        } catch (error) {
+            console.error('Error fetching voting polls:', error);
+        }
+    }
+        */
+
+
 
 </script>
 </html>
