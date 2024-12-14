@@ -53,6 +53,23 @@
         }
     };
 
+    if (window.ethereum) {
+        window.ethereum.on("accountsChanged", (accounts) => {
+            if (accounts.length > 0) {
+                console.log("Account changed:", accounts[0]);
+                localStorage.setItem("address", accounts[0]);
+                toastr.info("Account changed to: " + accounts[0]);
+                // Optionally reload or re-authenticate the user here
+            } else {
+                console.warn("MetaMask disconnected. Please connect again.");
+                toastr.error("MetaMask disconnected. Please reconnect.");
+                localStorage.removeItem("loggedIn");
+                localStorage.removeItem("address");
+            }
+        });
+    }
+
+    /*
     $("#connectToMetamaskAsVotePublisher").click(async function () {
         $("#loadingSpinner").show();
         try {
@@ -88,22 +105,66 @@
             $("#loadingSpinner").hide();
         }
     });
+    */
+
+    $("#connectToMetamaskAsVotePublisher").click(async function () {
+        $("#loadingSpinner").show();
+        try {
+            if (window.ethereum) {
+                window.provider = new ethers.BrowserProvider(window.ethereum);
+                let accounts = await window.provider.send("eth_requestAccounts", []);
+                const selectedAccount = accounts[0]; 
+                console.log("Currently selected account:", selectedAccount);
+                window.signer = await window.provider.getSigner(selectedAccount);
+
+                // Create the contract instance
+                const contract = new ethers.Contract(address, abi, window.signer);
+
+                // Call the checkAddress function and wait for confirmation
+                console.log("Verifying address as Vote Publisher...");
+                const tx = await contract.checkAddress(selectedAccount, 1);
+                const receipt = await tx.wait(); // Wait for confirmation
+                console.log("Transaction confirmed:", receipt);
+
+                // Store session data and redirect
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("votepublisher", "true");
+                localStorage.setItem("voter", "false");
+                localStorage.setItem("address", selectedAccount);
+
+                window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
+            } else {
+                toastr.error("MetaMask is not installed. Please install it to continue.");
+            }
+        } catch (error) {
+            console.error("Error connecting as Vote Publisher:", error);
+            toastr.error("Failed to connect as Vote Publisher. Please try again.");
+        } finally {
+            $("#loadingSpinner").hide();
+        }
+    });
 
     $("#connectToMetamaskAsVoter").click(async function () {
         $("#loadingSpinner").show();
         try {
             if (window.ethereum) {
-                // Connect to Metamask and get the provider
+                // Connect to MetaMask and get the provider
                 window.provider = new ethers.BrowserProvider(window.ethereum);
+
+                // Prompt the user to connect and get the selected account
                 let addresses = await window.provider.send("eth_requestAccounts", []);
-                window.signer = await window.provider.getSigner();
+                const selectedAccount = addresses[0]; // This is the currently selected account
+
+                console.log("Currently selected account:", selectedAccount);
+
+                window.signer = await window.provider.getSigner(selectedAccount);
 
                 // Create the contract instance
                 const contract = new ethers.Contract(address, abi, window.signer);
 
                 // Call the checkAddress function and wait for confirmation
                 console.log("Verifying address as Voter...");
-                const tx = await contract.checkAddress(addresses[0], 0);
+                const tx = await contract.checkAddress(selectedAccount, 0);
                 const receipt = await tx.wait(); // Wait for confirmation
                 console.log("Transaction confirmed:", receipt);
 
@@ -111,7 +172,7 @@
                 localStorage.setItem("loggedIn", "true");
                 localStorage.setItem("voter", "true");
                 localStorage.setItem("votepublisher", "false");
-                localStorage.setItem("address", addresses[0]);
+                localStorage.setItem("address", selectedAccount);
 
                 window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
             } else {
@@ -120,7 +181,7 @@
         } catch (error) {
             console.error("Error connecting as Voter:", error);
             toastr.error("Failed to connect as Voter. Please try again.");
-        }finally{
+        } finally {
             $("#loadingSpinner").hide();
         }
     });

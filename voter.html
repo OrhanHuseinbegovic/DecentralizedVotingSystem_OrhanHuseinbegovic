@@ -5,13 +5,30 @@
     <title>Voter - Panel</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="js/global.js"></script>
+    <link rel="stylesheet" href="css/voter.css">
 </head>
 
 <body>
-    <p>LOGGED TO THE VOTER PANEL</p>
+    <p>Logged to the VOTER panel</p>
+    <h2>Currently Active Voting polls</h2>
     <div id="polls">
+
     </div>
+
+    <!-- Modal -->
+    <div id="votingOptionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+        </div>
+    </div>
+
+    <div id="loadingSpinner" style="display: none;">
+        <img src="assets/spinner.gif" alt="Loading..." />
+    </div>
+
     <button id="logout">Log out</button>
 </body>
 <script>
@@ -42,7 +59,7 @@
 
     window.onload = function() {
         checkLogin();
-        getAllVotingPolls();
+        getAllVotingPollsVOTER();
     };
 
     $("#logout").click(async function() {
@@ -53,31 +70,108 @@
         checkLogin();
     });
 
-    async function getAllVotingPolls(){
+    $(".close").click(function () {
+        $("#votingOptionsModal").fadeOut(); 
+    });
+
+    $(window).click(function (event) {
+        if ($(event.target).is("#votingOptionsModal")) {
+            $("#votingOptionsModal").fadeOut();
+        }
+    });
+
+    async function getAllVotingPollsVOTER(){
         window.signer = await window.provider.getSigner();
         const contract = new ethers.Contract(address, abi, window.signer);
 
-        let votingPolls = await contract.getPolls();
-        console.log(votingPolls);
-        let content = '';
+        $("#loadingSpinner").show();
+        try{
+            let votingPolls = await contract.getAllActivePollsVOTER();
+            console.log(votingPolls);
+            let content = '';
 
-        for (const [id, title, creatorAddress, endTimestamp, status] of votingPolls) {
-            content += `
+            for (const [id, title, creatorAddress, endTimestamp, status] of votingPolls) {
+                content += `
+                    <p>
+                        <b>${title} (ID: ${id})</b>
+                        <br />
+                        <br />
+                        Status: Active
+                        <br />
+                        <button class="viewButton" data-id="${id}">View</button>
+                    </p>
+                `;
+            }
+
+            $('#polls').html(content);
+        }catch(error){
+            console.error("Error displaying polls:", error);
+            toastr.error("Failed to display polls. Please try again.", "Error");
+        }finally{
+            $("#loadingSpinner").hide();
+        }
+    }
+
+    $(document).on("click", ".viewButton", async function () {
+        window.signer = await window.provider.getSigner();
+        const contract = new ethers.Contract(address, abi, window.signer);
+
+        const pollId = $(this).data("id");
+        console.log("Poll ID:", pollId);
+        let votingOptions = await contract.getAllVotingOptions(pollId);
+        let options = '';
+        
+        for (const [id, name, voteCount] of votingOptions) {
+            options += `
                 <p>
-                    <b>${title} (ID: ${id})</b>
+                    <b>${name} (ID: ${id})</b>
                     <br />
-                    Created by: ${creatorAddress}
-                    <br />
-                    Status: ${status === 0 ? 'Active' : 'Inactive'}
-                    <br />
-                    <button class="viewButton" data-id="${id}">View</button>
+                    <button class="vote" data-id="${id}" data-poll-id="${pollId}">Vote</button>
                 </p>
             `;
         }
 
-        $('#polls').html(content);
-        console.log("data displazed");
-    }
+        $("#votingOptionsModal").find(".modal-content").html(`
+            <h2>Voting Poll Details</h2>
+            <p>Poll ID: ${pollId}</p>
+            <div>
+                <h2>Current Voting options</h2>
+                ${options}
+            </div>
+        `);
+
+        $("#votingOptionsModal").fadeIn();
+    });
+
+    $(document).on("click", ".vote", async function () {
+        window.signer = await window.provider.getSigner();
+        const contract = new ethers.Contract(address, abi, window.signer);
+
+        const votingOptionID = $(this).data("id");
+        const votingPollID = $(this).data("poll-id");
+
+        console.log("Poll ID:", votingPollID);
+        console.log("Option ID:", votingOptionID);
+
+        $("#loadingSpinner").show();
+        try{
+            let tx = await contract.vote(votingPollID, votingOptionID);
+            console.log("Transaction sent:", tx.hash);
+
+            const receipt = await tx.wait();
+            console.log("Transaction confirmed:", receipt);
+
+            getAllVotingPollsVOTER();
+            $("#votingOptionsModal").fadeOut();
+            toastr.success("Voted successfully!");
+        }catch(error){
+            console.error("Error voting:", error);
+            toastr.error("Failed to vote. Please try again.");
+        }finally{
+            $("#loadingSpinner").hide();
+        }
+        
+    });
 
 </script>
 </html>

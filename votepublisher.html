@@ -126,12 +126,10 @@
 
             let tx = await contract.createPoll(pollName, pollTime);
             const receipt = await tx.wait();
-            console.log("Transaction confirmed:", receipt);
 
-            toastr.success("Poll created successfully!", "Success");
-
-            // Fetch and display all voting polls
             getAllVotingPolls();
+            console.log("Transaction confirmed:", receipt);
+            toastr.success("Poll created successfully!", "Success");
         } catch (error) {
             console.error("Error creating poll:", error);
             toastr.error("Failed to create poll. Please try again.", "Error");
@@ -166,17 +164,16 @@
         `;
 
         for (const option of votingOptions) {
-            const optionName = option.name; // Assuming `name` is a property
-            const voteCount = option.voteCount; // Assuming `voteCount` is a property
-            const percentage = totalVoteCount > 0 
-                ? ((voteCount / totalVoteCount) * 100).toFixed(2) 
-                : 0;
+            const optionName = option.name; 
+            const voteCount = Number(option.voteCount); 
+            const percentage = totalVoteCount > 0 ? ((voteCount / Number(totalVoteCount)) * 100).toFixed(2) : 0;
+    
 
             content += `
                 <tr>
                     <td>${optionName}</td>
                     <td>${voteCount}</td>
-                    <td>${percentage}%</td>
+                    <td>${percentage}</td>
                 </tr>
             `;
         }
@@ -249,6 +246,7 @@
             console.log("Transaction confirmed:", receipt);
 
             toastr.success("Poll created successfully!", "Success");
+            $("#myModal").fadeOut();
 
             getAllVotingPolls();
         } catch (error) {
@@ -276,7 +274,10 @@
             const receipt = await tx.wait();
             console.log("Transaction confirmed:", receipt);
 
+            getAllVotingPolls();
+            $("#myModal").fadeOut();
             toastr.success("Voting poll successfully started!");
+            
         } catch (error) {
             console.error("Error starting poll:", error);
             toastr.error("Failed to start the poll. Please try again.");
@@ -301,15 +302,14 @@
             let tx = await contract.deleteVotingOption(votingPollID, votingOptionID);
             const receipt = await tx.wait();
             console.log("Transaction confirmed:", receipt);
+            toastr.success("Voting poll deleted successfully");
+            getAllVotingPolls();
         }catch(error){
             console.error("Error deleting poll:", error);
             toastr.error("Failed to delete the poll. Please try again.");
         }finally{
             $("#loadingSpinner").hide();
         }
-        
-        toastr.success("Voting poll deleted successfully");
-        getAllVotingPolls();
     });
 
     $(".close").click(function () {
