@@ -12,8 +12,13 @@
     <!-- Font Awesome CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/global.css">
+    <script src="js/global.js"></script>
 </head>
 <body>
+    <div class="overlay" id="overlay">
+        <div class="spinner"></div>
+    </div>
     <div class="section left-section">
         <div class="icon-container">
             <i class="fas fa-user-shield icon"></i>
@@ -25,9 +30,6 @@
             <i class="fas fa-user icon"></i>
         </div>
         <button id="connectToMetamaskAsVoter" class="btn btn-custom">Login as a Voter</button>
-    </div>
-    <div id="loadingSpinner" style="display: none;">
-        <img src="assets/spinner.gif" alt="Loading..." />
     </div>
 </body>
 
@@ -108,7 +110,7 @@
     */
 
     $("#connectToMetamaskAsVotePublisher").click(async function () {
-        $("#loadingSpinner").show();
+        toggleOverlay()
         try {
             if (window.ethereum) {
                 window.provider = new ethers.BrowserProvider(window.ethereum);
@@ -140,12 +142,12 @@
             console.error("Error connecting as Vote Publisher:", error);
             toastr.error("Failed to connect as Vote Publisher. Please try again.");
         } finally {
-            $("#loadingSpinner").hide();
+            toggleOverlay()
         }
     });
 
     $("#connectToMetamaskAsVoter").click(async function () {
-        $("#loadingSpinner").show();
+        toggleOverlay()
         try {
             if (window.ethereum) {
                 // Connect to MetaMask and get the provider
@@ -182,12 +184,9 @@
             console.error("Error connecting as Voter:", error);
             toastr.error("Failed to connect as Voter. Please try again.");
         } finally {
-            $("#loadingSpinner").hide();
+            toggleOverlay()
         }
     });
-
-
-
 </script>
 
 </html>

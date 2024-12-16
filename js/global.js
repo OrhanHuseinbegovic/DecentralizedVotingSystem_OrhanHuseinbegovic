@@ -14,3 +14,12 @@ window.addEventListener("load", async function () {
         console.error("Ethereum provider not found!");
     }
 });
+
+function toggleOverlay() {
+    const overlay = document.getElementById('overlay');
+    if (overlay.classList.contains('visible')) {
+        overlay.classList.remove('visible');
+    } else {
+        overlay.classList.add('visible');
+    }
+}

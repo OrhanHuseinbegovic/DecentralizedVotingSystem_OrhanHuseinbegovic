@@ -9,63 +9,68 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <link rel="stylesheet" href="css/votepublisher.css">
     <script src="js/global.js"></script>
+    <link rel="stylesheet" href="css/votepublisher.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
-    <p>Logged to the VOTE PUBLISHER panel</p>
+    <div id="main" class="container">
+        <p class="alert alert-info text-center">Logged to the VOTE PUBLISHER panel</p>
 
-    <div id="main">
-        <h2>Active polls</h2>
-        <div id="activePolls"> 
-            
-        </div>
-        <h2>Pending polls</h2>
-        <div id="pendingPolls">
-            
-        </div>
-        <h2>Finished polls</h2>
-        <div id="finishedPolls">
-
-        </div>
-        <div id="newPolls">
-            <form id="addNewPollForm">
-                <label for="name">Voting poll name</label>
-                <input type="text" id="name" name="name" required></input>
-                <label for="time">Time for voting</label>
-                <select name="time" id="time" required>
-                    <option value="43200">12 h</option>
-                    <option value="64800">18 h</option>
-                    <option value="86400">1 day</option>
-                    <option value="172800">2 days</option>
-                    <option value="259200">3 days</option>
-                    <option value="345600">4 days</option>
-                    <option value="432000">5 days</option>
-                    <option value="518400">6 days</option>
-                    <option value="604800">7 days</option>
-                </select> 
-                <button id="addNewPollFormButton">Add a new poll</button>
+        <div id="newPolls" class="mb-5">
+            <form id="addNewPollForm" class="shadow-sm p-4 rounded bg-light">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Voting poll name</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="time" class="form-label">Time for voting</label>
+                    <select name="time" id="time" class="form-select" required>
+                        <option value="43200">12 h</option>
+                        <option value="64800">18 h</option>
+                        <option value="86400">1 day</option>
+                        <option value="172800">2 days</option>
+                        <option value="259200">3 days</option>
+                        <option value="345600">4 days</option>
+                        <option value="432000">5 days</option>
+                        <option value="518400">6 days</option>
+                        <option value="604800">7 days</option>
+                    </select>
+                </div>
+                <button id="addNewPollFormButton" class="btn btn-primary w-100">Add a new poll</button>
             </form>
         </div>
+
+        <h2>Search Polls</h2>
+        <input type="text" id="searchInput" class="form-control" placeholder="Search polls...">
+
+        <h2>Active polls</h2>
+        <div id="activePolls" class="mb-5"></div>
+
+        <h2>Pending polls</h2>
+        <div id="pendingPolls" class="mb-5"></div>
+
+        <h2>Finished polls</h2>
+        <div id="finishedPolls"></div>
     </div>
-    <button id="logout">Log out</button>
-    <div id="loadingSpinner" style="display: none;">
-        <img src="assets/spinner.gif" alt="Loading..." />
+
+    <button id="logout" class="btn btn-danger position-fixed bottom-0 end-0 m-4">Log out</button>
+
+
+    <div class="overlay" id="overlay">
+        <div class="spinner"></div>
     </div>
+
     <!-- Modal -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Modal Title</h2>
-            <p>This is a simple modal popup.</p>
         </div>
     </div>
     <!-- Finished poll statistics -->
     <div id="finishedPoll" class="modall">
         <div class="modal-contentt">
             <span class="closee">&times;</span>
-            <h2>Modal Title</h2>
-            <p>This is a simple modal popup.</p>
         </div>
     </div>
 </body>
@@ -115,7 +120,7 @@
     $("#addNewPollFormButton").click(async function (event) {
         event.preventDefault(); 
 
-        $("#loadingSpinner").show();
+        toggleOverlay()
 
         try {
             window.signer = await window.provider.getSigner();
@@ -130,12 +135,14 @@
             getAllVotingPolls();
             console.log("Transaction confirmed:", receipt);
             toastr.success("Poll created successfully!", "Success");
+            document.getElementById('name').value = "";
+            document.getElementById('time').value = "";
         } catch (error) {
             console.error("Error creating poll:", error);
             toastr.error("Failed to create poll. Please try again.", "Error");
         } finally {
             // Hide the spinner
-            $("#loadingSpinner").hide();
+            toggleOverlay()
         }
     });
 
@@ -146,11 +153,32 @@
         const pollId = $(this).data("id");
         console.log("Poll ID:", pollId);
 
+        const endTime = await contract.getVotingPollTime(pollId);
+        const pollName = await contract.getVotingPollName(pollId);
+
+        const endTimeMs = Number(endTime) * 1000;
+        const currentTime = Date.now();
+
+        const timeLeft = endTimeMs - currentTime;
+
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        let time = "";
+        if (timeLeft < 0) {
+            time = "Voting poll has ended!";
+        }
+        else if(timeLeft >= 0){
+            time = `<p>Poll ends in ${hours} hours, ${minutes} minutes and ${seconds} seconds</p>`;
+        }
+
         // Fetch statistics from the contract
         const [votingOptions, totalVoteCount] = await contract.getStatistics(pollId);
 
         // Prepare the content
         let content = `
+            <h1>Voting Poll name: ${pollName}</h1>
             <h2>Statistics for Poll ID: ${pollId}</h2>
             <table border="1" style="width: 100%; text-align: left;">
                 <thead>
@@ -167,7 +195,6 @@
             const optionName = option.name; 
             const voteCount = Number(option.voteCount); 
             const percentage = totalVoteCount > 0 ? ((voteCount / Number(totalVoteCount)) * 100).toFixed(2) : 0;
-    
 
             content += `
                 <tr>
@@ -181,11 +208,75 @@
         content += `
                 </tbody>
             </table>
+            ${time}
         `;
 
-        $("#finishedPoll").find(".modal-contentt").html(content);
+        // Insert CSS for modal inside the modal content
+        const modalStyles = `
+            <style>
+                /* Modal Styles */
+                .modall {
+                    display: none;
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: auto;
+                    background-color: rgba(0, 0, 0, 0.5);
+                }
+
+                /* Modal Content */
+                .modal-contentt {
+                    background-color: #fff;
+                    margin: 10% auto;
+                    padding: 20px;
+                    border: 1px solid #888;
+                    width: 60%;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                    text-align: center;
+                }
+
+                /* Close Button */
+                .closee {
+                    color: #aaa;
+                    float: right;
+                    font-size: 28px;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+
+                .closee:hover,
+                .closee:focus {
+                    color: #000;
+                    text-decoration: none;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                }
+
+                th, td {
+                    padding: 10px;
+                    text-align: left;
+                    border: 1px solid #ddd;
+                }
+
+                th {
+                    background-color: #f4f4f4;
+                }
+            </style>
+        `;
+        
+        // Inject CSS styles and modal content
+        $("#finishedPoll").find(".modal-contentt").html(modalStyles + content);
         $("#finishedPoll").fadeIn();
     });
+
 
 
 
@@ -209,6 +300,16 @@
         const hours = Math.floor(timeLeft / (1000 * 60 * 60));
         const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        let time = "";
+
+        if (timeLeft < 0) {
+            console.log("Time is less than 0!");
+            time = "Poll not started yet!";
+        }
+        else if(timeLeft >= 0) {
+            time = `<p>Poll ends in ${hours} hours, ${minutes} minutes and ${seconds} seconds</p>`;
+        }
         
         
         for (const [id, name, voteCount] of votingOptions) {
@@ -225,7 +326,7 @@
             <h2>Voting Poll Details</h2>
             <p>Poll ID: ${pollId}</p>
             <p>Poll Name: ${pollName}</p>
-            <p>Poll ends in ${hours} hours, ${minutes} minutes and ${seconds} seconds</p>
+            <p>${time}</p>
             <form id="addVotingOptionForm">
                 <label for="optionName">Voting option name: </label>
                 <input type="text" name="optionName" id="optionName" required />
@@ -236,6 +337,7 @@
                 <h2>Current Voting options</h2>
                 ${options}
                 <button type="button" class="startVotingPoll" data-poll-id="${pollId}">Start Voting Poll</button>
+                <button class="deletePendingPoll" data-id="${pollId}">Delete Voting Poll</button>
             </div>
         `);
 
@@ -245,7 +347,7 @@
     $(document).on("click", ".addVotingOption", async function (event) {
         event.preventDefault(); 
 
-        $("#loadingSpinner").show();
+        toggleOverlay()
 
         try {
             window.signer = await window.provider.getSigner();
@@ -263,10 +365,10 @@
 
             getAllVotingPolls();
         } catch (error) {
-            console.error("Error creating poll:", error);
-            toastr.error("Failed to create poll. Please try again.", "Error");
+            console.error("Error adding Voting Option:", error);
+            toastr.error("Failed to add Voting Option. Please try again.", "Error");
         } finally {
-            $("#loadingSpinner").hide();
+            toggleOverlay()
         }
 
     });
@@ -278,7 +380,7 @@
         const pollId = $(this).data("poll-id");
         console.log("Starting Voting Poll for ID:", pollId);
 
-        $("#loadingSpinner").show();
+        toggleOverlay()
         try {
             const tx = await contract.startVotingPoll(pollId);
             const endTime = await contract.getVotingPollTime(pollId);
@@ -295,8 +397,8 @@
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
             const receipt = await tx.wait();
-            await endTime.wait();
-            await pollName.wait();
+            endTime.wait();
+            pollName.wait();
             console.log("Transaction confirmed:", receipt);
 
             getAllVotingPolls();
@@ -306,7 +408,7 @@
             console.error("Error starting poll:", error);
             toastr.error("Failed to start the poll. Please try again.");
         } finally {
-            $("#loadingSpinner").hide();
+            toggleOverlay()
         }
     });
 
@@ -320,29 +422,30 @@
 
         window.signer = await window.provider.getSigner();
         const contract = new ethers.Contract(address, abi, window.signer);
-        $("#loadingSpinner").show();
+        toggleOverlay()
 
         try{
             let tx = await contract.deleteVotingOption(votingPollID, votingOptionID);
             const receipt = await tx.wait();
             console.log("Transaction confirmed:", receipt);
             toastr.success("Voting option deleted successfully");
+            $("#myModal").fadeOut();
             getAllVotingPolls();
         }catch(error){
             console.error("Error deleting poll:", error);
             toastr.error("Failed to delete voting option. Please try again.");
         }finally{
-            $("#loadingSpinner").hide();
+            toggleOverlay()
         }
     });
 
-    $(document).click("click",".deletePendingPoll", async function () {  
+    $(document).on("click",".deletePendingPoll", async function () {  
         const votingPollID = $(this).data("id");
         console.log("Voting Poll ID:", votingPollID);
 
         window.signer = await window.provider.getSigner();
         const contract = new ethers.Contract(address, abi, window.signer);
-        $("#loadingSpinner").show();
+        toggleOverlay()
 
         try{
             let tx = await contract.deletePendingPoll(votingPollID);
@@ -354,33 +457,44 @@
             console.error("Error deleting poll:", error);
             toastr.error("Failed to delete poll. Please try again.");
         }finally{
-            $("#loadingSpinner").hide();
+            toggleOverlay()
         }
     });
 
-    $(".close").click(function () {
-        $("#myModal").fadeOut(); 
-    });
-
-    $(window).click(function (event) {
-        if ($(event.target).is("#myModal")) {
+    $(document).ready(function () {
+        // Close modal when clicking on the close button
+        $(".close").click(function () {
             $("#myModal").fadeOut();
-        }
-    });
-    
-    $(".closee").click(function () {
-        $("#finishedPoll").fadeOut(); 
+        });
+
+        // Close modal when clicking outside the modal
+        $(window).click(function (event) {
+            if ($(event.target).is("#myModal")) {
+                $("#myModal").fadeOut();
+            }
+        });
+
+        // Close finished poll modal
+        $(".closee").click(function () {
+            $("#finishedPoll").fadeOut();
+        });
+
+        $(window).click(function (event) {
+            if ($(event.target).is("#finishedPoll")) {
+                $("#finishedPoll").fadeOut();
+            }
+        });
+
+        // Close modal with another button
+        $("#closeMyModal").click(function () {
+            $("#myModal").fadeOut();
+        });
     });
 
-    $(window).click(function (event) {
-        if ($(event.target).is("#finishedPoll")) {
-            $("#finishedPoll").fadeOut();
-        }
-    });
 
 
     async function getAllVotingPolls(){
-        $("#loadingSpinner").show();
+        toggleOverlay()
         window.signer = await window.provider.getSigner();
         const contract = new ethers.Contract(address, abi, window.signer);
 
@@ -403,7 +517,7 @@
                     <br />
                     Created by: ${creatorAddress}
                     <br />
-                    Status: ${status === 0 ? 'Active' : 'Pending'}
+                    Status: Active
                     <br />
                     <button class="getStatistics" data-id="${id}">View</button>
                 </p>
@@ -417,7 +531,7 @@
                     <br />
                     Created by: ${creatorAddress}
                     <br />
-                    Status: ${status === 0 ? 'Active' : 'Pending'}
+                    Status: Pending
                     <br />
                     <button class="viewVotingPoll" data-id="${id}">View</button>
                     <button class="deletePendingPoll" data-id="${id}">Delete Voting Poll</button>
@@ -432,19 +546,56 @@
                     <br />
                     Created by: ${creatorAddress}
                     <br />
-                    Status: ${status === 0 ? 'Active' : 'Finished'}
+                    Status: Finished
                     <br />
                     <button class="getStatistics" data-id="${id}">View statistics</button>
                 </p>
             `;
         }
 
-        $('#activePolls').html(active);
-        $('#pendingPolls').html(pending);
-        $('#finishedPolls').html(finished);
+        if(active == ""){
+            $('#activePolls').html("No active polls");
+        }
+        else{
+            $('#activePolls').html(active);
+        }
+        if(pending == ""){
+            $('#pendingPolls').html("No pending polls");
+        }
+        else{
+            $('#pendingPolls').html(pending);
+        }
+        if(finished == ""){
+            $('#finishedPolls').html("No finished polls");
+        }else{
+            $('#finishedPolls').html(finished);
+        }
+
         console.log("Data displayed!");
-        $("#loadingSpinner").hide();
+        toggleOverlay()
     }
+
+        const searchInput = document.getElementById("searchInput");
+        const pollContainer = document.getElementById("activePolls");
+
+        // Listen for input changes
+        searchInput.addEventListener("input", function () {
+            const query = searchInput.value.toLowerCase(); // Convert search query to lowercase
+            const polls = pollContainer.getElementsByTagName("p"); // Get all poll <p> elements
+
+            // Loop through all polls
+            for (let poll of polls) {
+                const title = poll.querySelector("b").innerText.toLowerCase(); // Get title text
+                const creator = poll.innerText.toLowerCase(); // Full inner text (includes creator address)
+
+                // Check if query matches title, creator, or any relevant text
+                if (title.includes(query) || creator.includes(query)) {
+                    poll.classList.remove("hidden"); // Show the poll
+                } else {
+                    poll.classList.add("hidden"); // Hide the poll
+                }
+            }
+        });
     
 
 </script>
