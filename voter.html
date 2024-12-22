@@ -15,15 +15,27 @@
 
 <body>
     <p>Logged to the VOTER panel</p>
-    <h2>Currently Active Voting polls</h2>
-    <div id="polls">
 
-    </div>
+    <h2>Currently Active Voting polls</h2>
+    <div id="activePolls"></div>
+
+    <h2>Currently Active Voted-for polls</h2>
+    <div id="votedPolls"></div>
+
+    <h2>Finished polls</h2>
+    <div id="finishedPolls"></div>
 
     <!-- Modal -->
     <div id="votingOptionsModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
+        </div>
+    </div>
+
+    <!--Poll statistics -->
+    <div id="finishedPoll" class="modall">
+        <div class="modal-contentt">
+            <span class="closee">&times;</span>
         </div>
     </div>
 
@@ -34,8 +46,8 @@
     <button id="logout">Log out</button>
 </body>
 <script>
-    const abi = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"addedNewUser","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_votingOptionID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newOptionCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_votePublisher","type":"address"},{"indexed":false,"internalType":"uint256","name":"_pollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newPollCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_address","type":"address"},{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newVote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_votingOptionID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"optionDeleted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"pollDeleted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"enum VotingSystem.UserType","name":"_userType","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"userLoggedIn","type":"event"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"addVotingOption","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"addresses","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"enum VotingSystem.UserType","name":"_userType","type":"uint8"}],"name":"checkAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"checkHasStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"uint256","name":"_timeLeft","type":"uint256"}],"name":"createPoll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"deletePendingPoll","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"uint256","name":"_votingOptionID","type":"uint256"}],"name":"deleteVotingOption","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getAllActivePollsVOTER","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getAllActivePollsVP","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllFinishedPollsVP","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllPendingPollsVP","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getAllVotingOptions","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"internalType":"struct VotingSystem.VotingOption[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getStatistics","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"internalType":"struct VotingSystem.VotingOption[]","name":"","type":"tuple[]"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getVotingPollName","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getVotingPollTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"hasStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"hasVoted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"isPublisher","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"startVotingPoll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userRoles","outputs":[{"internalType":"enum VotingSystem.UserType","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"uint256","name":"_votingOptionID","type":"uint256"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"votingOptionsByPoll","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"votingPollCounterID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"votingPolls","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"stateMutability":"view","type":"function"}]
-    const address = "0xd87042e5c81a9cfafcb985356df1edf2b70a6fdd";
+    const abi = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"addedNewUser","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_votingOptionID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newOptionCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_votePublisher","type":"address"},{"indexed":false,"internalType":"uint256","name":"_pollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newPollCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"_address","type":"address"},{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTime","type":"uint256"}],"name":"newVote","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_votingOptionID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"optionDeleted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"pollDeleted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"_userAddress","type":"address"},{"indexed":false,"internalType":"enum VotingSystem.UserType","name":"_userType","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"_currentTimestamp","type":"uint256"}],"name":"userLoggedIn","type":"event"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"string","name":"_name","type":"string"}],"name":"addVotingOption","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"addresses","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_address","type":"address"},{"internalType":"enum VotingSystem.UserType","name":"_userType","type":"uint8"}],"name":"checkAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"checkHasStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_name","type":"string"},{"internalType":"string","name":"_description","type":"string"},{"internalType":"uint256","name":"_timeLeft","type":"uint256"}],"name":"createPoll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"deletePendingPoll","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"uint256","name":"_votingOptionID","type":"uint256"}],"name":"deleteVotingOption","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getAllActivePollsVOTER","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllActivePollsVP","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllFinishedPollsVOTER","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllFinishedPollsVP","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllPendingPollsVP","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllVotedPollsVOTER","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"internalType":"struct VotingSystem.VotingPoll[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getAllVotingOptions","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"internalType":"struct VotingSystem.VotingOption[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getStatistics","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"internalType":"struct VotingSystem.VotingOption[]","name":"","type":"tuple[]"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getVotingPollDescription","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getVotingPollName","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getVotingPollStatus","outputs":[{"internalType":"enum VotingSystem.Status","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"getVotingPollTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"hasStarted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"hasVoted","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"isPublisher","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"}],"name":"startVotingPoll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userRoles","outputs":[{"internalType":"enum VotingSystem.UserType","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_votingPollID","type":"uint256"},{"internalType":"uint256","name":"_votingOptionID","type":"uint256"}],"name":"vote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"votingOptionsByPoll","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"votingPollCounterID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"votingPolls","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"description","type":"string"},{"internalType":"address","name":"votePublisher","type":"address"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"enum VotingSystem.Status","name":"status","type":"uint8"}],"stateMutability":"view","type":"function"}]
+    const address = "0x9816e5038ba5a3ee6bfa7aad69e8380ab1fa8dae";
 
     function checkLogin(){
         let loggedIn = localStorage.getItem("loggedIn");
@@ -84,14 +96,21 @@
         window.signer = await window.provider.getSigner();
         const contract = new ethers.Contract(address, abi, window.signer);
 
-        $("#loadingSpinner").show();
+        toggleOverlay();
         try{
-            let votingPolls = await contract.getAllActivePollsVOTER();
-            votingPolls.wait();
-            console.log(votingPolls);
-            let content = '';
+            let activePolls = await contract.getAllActivePollsVOTER();
+            let votedPolls = await contract.getAllVotedPollsVOTER();
+            let finishedPolls = await contract.getAllFinishedPollsVOTER();
 
-            for (const [id, title, creatorAddress, endTimestamp, status] of votingPolls) {
+            console.log(activePolls);
+            console.log(votedPolls);
+            console.log(finishedPolls);
+
+            let active = '';
+            let voted = '';
+            let finished = '';
+
+            for (const [id, title, description, creatorAddress, endTimestamp, status] of activePolls) {
                 const endTime = Number(endTimestamp);
                 const endTimeMs = Number(endTime) * 1000;
                 const currentTime = Date.now();
@@ -99,7 +118,7 @@
                 const hours = Math.floor(timeLeft / (1000 * 60 * 60));
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                content += `
+                active += `
                     <p>
                         <b>${title} (ID: ${id})</b>
                         <br />
@@ -108,22 +127,78 @@
                         Poll ends in ${hours} hours, ${minutes} minutes, ${seconds} seconds 
                         <br />
                         <button class="viewButton" data-id="${id}">View</button>
+                        <button class="getStatistics" data-id="${id}">Get statistics</button>
                     </p>
                 `;
             }
 
-            if(content == ""){
-                content = "No active polls";
-                $('#polls').html(content); 
+            for (const [id, title, description, creatorAddress, endTimestamp, status] of votedPolls) {
+                const endTime = Number(endTimestamp);
+                const endTimeMs = Number(endTime) * 1000;
+                const currentTime = Date.now();
+                const timeLeft = endTimeMs - currentTime;
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                voted += `
+                    <p>
+                        <b>${title} (ID: ${id})</b>
+                        <br />
+                        <br />
+                        Status: Active
+                        Poll ends in ${hours} hours, ${minutes} minutes, ${seconds} seconds 
+                        <br />
+                        <button class="getStatistics" data-id="${id}">Get statistics</button>
+                    </p>
+                `;
+            }
+
+            for (const [id, title, description, creatorAddress, endTimestamp, status] of finishedPolls) {
+                const endTime = Number(endTimestamp);
+                const endTimeMs = Number(endTime) * 1000;
+                const currentTime = Date.now();
+                const timeLeft = endTimeMs - currentTime;
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                finished += `
+                    <p>
+                        <b>${title} (ID: ${id})</b>
+                        <br />
+                        <br />
+                        Status: Finished
+                        <br />
+                        <button class="getStatistics" data-id="${id}">Get statistics</button>
+                    </p>
+                `;
+            }
+
+            if(active == ""){
+                active = "No active polls";
+                $('#activePolls').html(active); 
             }else{
-                $('#polls').html(content); 
+                $('#activePolls').html(active); 
+            }
+
+            if(voted == ""){
+                voted = "No voted polls";
+                $('#votedPolls').html(voted);
+            }else{
+                $('#votedPolls').html(voted);
+            }
+
+            if(finished == ""){
+                finished = "No finished polls";
+                $('#finishedPolls').html(finished);
+            }else{
+                $('#finishedPolls').html(finished);
             }
             
         }catch(error){
             console.error("Error displaying polls:", error);
             toastr.error("Failed to display polls. Please try again.", "Error");
         }finally{
-            $("#loadingSpinner").hide();
+            toggleOverlay();
         }
     }
 
@@ -132,7 +207,11 @@
         const contract = new ethers.Contract(address, abi, window.signer);
 
         const pollId = $(this).data("id");
+
         const pollName = await contract.getVotingPollName(pollId);
+        const description = await contract.getVotingPollDescription(pollId);
+        const pollTime = await contract.getVotingPollTime(pollId);
+
         console.log("Poll ID:", pollId);
         let votingOptions = await contract.getAllVotingOptions(pollId);
         let options = '';
@@ -151,10 +230,12 @@
             <h2>Voting Poll Details</h2>
             <p>Poll ID: ${pollId}</p>
             <p>Poll Name: ${pollName}</p>
+            <p>Poll description: ${description}</p>
             <div>
                 <h2>Voting options for this poll</h2>
                 ${options}
             </div>
+            <button class="getStatistics" data-id="${pollId}">Get statistics</button>
         `);
 
         $("#votingOptionsModal").fadeIn();
@@ -170,7 +251,7 @@
         console.log("Poll ID:", votingPollID);
         console.log("Option ID:", votingOptionID);
 
-        $("#loadingSpinner").show();
+        toggleOverlay();
         try{
             let tx = await contract.vote(votingPollID, votingOptionID);
             console.log("Transaction sent:", tx.hash);
@@ -185,8 +266,184 @@
             console.error("Error voting:", error);
             toastr.error("Failed to vote. Please try again.");
         }finally{
-            $("#loadingSpinner").hide();
+            toggleOverlay();
         }
+    });
+
+
+    $(document).on("click", ".getStatistics", async function () {
+        window.signer = await window.provider.getSigner();
+        const contract = new ethers.Contract(address, abi, window.signer);
+
+        const pollId = $(this).data("id");
+        console.log("Poll ID:", pollId);
+
+        let endTime = await contract.getVotingPollTime(pollId);
+        let description = await contract.getVotingPollDescription(pollId);
+        let pollName = await contract.getVotingPollName(pollId);
+        let pollStatus = await contract.getVotingPollStatus(pollId);
+
+        if(pollStatus == 0){
+            pollStatus = "pending"
+        }else if(pollStatus == 1){
+            pollStatus = "active"
+        }
+        else{
+            pollStatus = "finished"
+        }
+
+        const endTimeMs = Number(endTime) * 1000;
+        const currentTime = Date.now();
+
+        const timeLeft = endTimeMs - currentTime;
+
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        let time = "";
+        if (timeLeft < 0) {
+            time = "Voting poll has ended!";
+        }
+        else if(timeLeft >= 0){
+            time = `<p>Poll ends in ${hours} hours, ${minutes} minutes and ${seconds} seconds</p>`;
+        }
+
+        // Fetch statistics from the contract
+        const [votingOptions, totalVoteCount] = await contract.getStatistics(pollId);
+
+        // Prepare the content
+        let content = `
+            <h1>Voting Poll name: ${pollName}</h1>
+            <h2>Statistics for Poll ID: ${pollId}</h2>
+            <h2>Description: </h2>
+            <p>${description}</p>
+            <table border="1" style="width: 100%; text-align: left;">
+                <thead>
+                    <tr>
+                        <th>Option Name</th>
+                        <th>Vote Count</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        for (const option of votingOptions) {
+            const optionName = option.name; 
+            const voteCount = Number(option.voteCount); 
+            const percentage = totalVoteCount > 0 ? ((voteCount / Number(totalVoteCount)) * 100).toFixed(2) : 0;
+
+            content += `
+                <tr>
+                    <td>${optionName}</td>
+                    <td>${voteCount}</td>
+                    <td>${percentage}</td>
+                </tr>
+            `;
+        }
+
+        content += `
+                </tbody>
+            </table>
+            ${time}
+        `;
+
+        // Insert CSS for modal inside the modal content
+        const modalStyles = `
+            <style>
+                /* Modal Styles */
+                .modall {
+                    display: none;
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: auto;
+                    background-color: rgba(0, 0, 0, 0.5);
+                }
+
+                /* Modal Content */
+                .modal-contentt {
+                    background-color: #fff;
+                    margin: 10% auto;
+                    padding: 20px;
+                    border: 1px solid #888;
+                    width: 60%;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                    text-align: center;
+                }
+
+                /* Close Button */
+                .closee {
+                    color: #aaa;
+                    float: right;
+                    font-size: 28px;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+
+                .closee:hover,
+                .closee:focus {
+                    color: #000;
+                    text-decoration: none;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                }
+
+                th, td {
+                    padding: 10px;
+                    text-align: left;
+                    border: 1px solid #ddd;
+                }
+
+                th {
+                    background-color: #f4f4f4;
+                }
+            </style>
+        `;
+        
+        // Inject CSS styles and modal content
+        $("#finishedPoll").find(".modal-contentt").html(modalStyles + content);
+        $("#finishedPoll").fadeIn();
+    });
+
+
+    $(document).ready(function () {
+        // Close modal when clicking on the close button
+        $(".close").click(function () {
+            $("#votingOptionsModal").fadeOut();
+        });
+
+        // Close modal when clicking outside the modal
+        $(window).click(function (event) {
+            if ($(event.target).is("#votingOptionsModal")) {
+                $("#votingOptionsModal").fadeOut();
+            }
+        });
+
+        // Close finished poll modal
+        $(".closee").click(function () {
+            $("#finishedPoll").fadeOut();
+        });
+
+        $(window).click(function (event) {
+            if ($(event.target).is("#finishedPoll")) {
+                $("#finishedPoll").fadeOut();
+            }
+        });
+
+        // Close modal with another button
+        $("#closeMyModal").click(function () {
+            $("#myModal").fadeOut();
+        });
     });
 
 </script>

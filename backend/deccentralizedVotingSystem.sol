@@ -181,6 +181,10 @@ contract VotingSystem{
         return votingPolls[_votingPollID].timeLeft;
     }
 
+    function getVotingPollStatus(uint _votingPollID) public view returns (Status) {
+        return votingPolls[_votingPollID].status;
+    }
+
     
 
     /*
