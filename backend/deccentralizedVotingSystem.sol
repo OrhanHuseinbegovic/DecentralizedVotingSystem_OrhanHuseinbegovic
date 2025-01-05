@@ -203,6 +203,25 @@ contract VotingSystem{
         }
     } 
 
+    function endVotingPolls() public {
+        for(uint256 i=0; i<votingPollCounterID; i++){
+            if(block.timestamp >= votingPolls[i].timeLeft){
+                votingPolls[i].status = Status.Finished;
+                hasStarted[i] = false; 
+                isFinished[i] = true;
+            }
+        }
+    } 
+
+    function checkPolls() public view returns(bool)  {
+        for(uint256 i=0; i<votingPollCounterID; i++){
+            if(block.timestamp >= votingPolls[i].timeLeft){
+                return true;
+            }
+        }
+        return false;
+    } 
+
     function checkHasStarted(uint256 _votingPollID) public view returns (bool) {
         return hasStarted[_votingPollID];
     }
@@ -387,9 +406,11 @@ contract VotingSystem{
         //Update that the user has voted
         //Emit that the user has voted
         //update the vote count for that voting poll
+        /*
         if(block.timestamp >= votingPolls[_votingPollID].timeLeft){
             endVotingPoll(_votingPollID);
         }
+        */
         require(votingPolls[_votingPollID].status == Status.Active, "Can't vote for a finished poll!");
         votingOptionsByPoll[_votingPollID][_votingOptionID].voteCount++;
         hasVoted[msg.sender][_votingPollID] = true;
