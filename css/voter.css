@@ -1,75 +1,158 @@
-/* Modal Content Styling */
-.modal-content {
-    background: linear-gradient(to bottom, #ffffff, #f9f9f9);
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
+body {
+    background: linear-gradient(to bottom, #7b2cbf, #e2d4ba); /* Purple to Tan Gradient */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
-/* Modal Header */
-.modal-header {
-    background-color: #1c567e;
-    color: #fff;
-    border-bottom: none;
-    padding: 15px;
-    text-align: center;
-    border-radius: 10px 10px 0 0;
-}
-
-.modal-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-/* Close Button */
-.modal-header .close {
-    color: #fff;
-    font-size: 1.5rem;
-    outline: none;
-}
-
-/* Modal Body */
-.modal-body {
-    padding: 20px;
+/* Rules List Styling */
+.rules-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
     font-size: 1rem;
     color: #333;
 }
+.rules-list li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+}
+.rules-list li:before {
+    content: '✔';
+    position: absolute;
+    left: 0;
+    color: #1c567e;
+    font-weight: bold;
+}
 
-/* Card Styling for Voting Options */
-.card {
-    border: 1px solid #ddd;
+.poll-card {
+    border: 2px solid #1C567E; /* Blue border */
     border-radius: 8px;
-    background-color: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
 }
-
-.card:hover {
-    background-color: #eef2f7;
+.poll-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+    transition: 0.3s;
 }
-
-/* Buttons */
-.modal-footer .btn-primary {
-    background-color: #1c567e;
+.btn-custom {
+    background-color: #f1c40f; /* Yellow */
+    color: #fff;
     border: none;
-    font-size: 1rem;
-    padding: 10px 20px;
+}
+.btn-custom:hover {
+    background-color: #d4ac0d; /* Darker yellow */
+    color: #fff;
+}
+.btn-blue {
+    background-color: purple; /* Blue */
+    color: #fff;
+    border: none;
+}
+.btn-blue:hover {
+    background-color: rgb(218, 6, 218); /* Darker blue */
+    color: white;
+}
+.btn-red {
+    background-color: #e74c3c; /* Red */
+    color: #fff;
+    border: none;
+}
+.btn-red:hover {
+    background-color: #c0392b; /* Darker red */
+}
+
+/* Responsive Rules and Image Layout */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Navbar Styling */
+.navbar.bg-light {
+    background-color: #b3d9ff; /* Light Blue Background */
+    color: #000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px 15px;
+}
+
+.navbar .navbar-logo {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.navbar .website-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000;
+}
+
+/* Logout Button Styling */
+.btn-logout {
+    background-color: #f7d774; /* Yellow Button */
+    color: #000;
+    font-weight: bold;
+    border: none;
+    padding: 5px 15px;
     border-radius: 20px;
     transition: background-color 0.3s ease;
 }
 
-.modal-footer .btn-primary:hover {
-    background-color: #15405a;
+.btn-logout:hover {
+    background-color: #e5c761; /* Slightly Darker Yellow */
+    color: #000;
 }
 
-.modal-footer .btn-secondary {
-    background-color: #f1c40f;
+.rulesAndPicture {
+    padding-top: 50px;
+}
+
+/* Custom button styles */
+.btn-purple {
+    background-color: #7b2cbf;
+    color: white;
     border: none;
-    font-size: 1rem;
     padding: 10px 20px;
-    border-radius: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
     transition: background-color 0.3s ease;
 }
 
-.modal-footer .btn-secondary:hover {
-    background-color: #e1b509;
+.btn-purple:hover {
+    background-color: #6924a3;
+}
+
+.btn-warning {
+    background-color: #f7d774;
+    color: black;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-warning:hover {
+    background-color: #e5c761;
+}
+
+.headingOne {
+    color: white;
+    padding-bottom: 50px;
+}
+
+.bojaNaslova {
+    color: #f7d774;
+}
+
+.bojaSlova {
+    color: white;
 }

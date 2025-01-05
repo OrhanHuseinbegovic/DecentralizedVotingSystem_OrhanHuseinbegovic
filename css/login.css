@@ -21,10 +21,10 @@ body {
     position: relative;
 }
 .left-section {
-    background-color: #fef08a;
+    background-color: #f7d774;
 }
 .right-section {
-    background-color: #93c5fd;
+    background-color: purple;
 }
 .icon {
     font-size: 4rem;
@@ -35,7 +35,7 @@ body {
     transform: translate(-50%, -50%);
 }
 .btn-custom {
-    background-color: #d97706;
+    background-color: #f6f6f6;
     color: black;
     border-radius: 20px;
     margin-top: 10rem;

@@ -28,3 +28,11 @@
     background-size: contain;
     z-index: 1060;  /* Ensure spinner is above the modal content */
 }
+
+img {
+    max-width: 100%; /* Ensures it scales properly */
+    height: auto; /* Keeps the aspect ratio */
+    display: block;
+    margin: 0 auto; /* Centers the image */
+    max-height: 300px; /* Optional, limits height on large screens */
+}

@@ -1,8 +1,44 @@
-/* General Styles */
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 20px;
-    background-color: #f7f7f7; /* Light background color */
+    background: linear-gradient(to bottom, #7b2cbf, #e2d4ba); /* Purple to Tan Gradient */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar Styling */
+.navbar.bg-light {
+    background-color: #b3d9ff; /* Light Blue Background */
+    color: #000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px 15px;
+}
+
+.navbar .navbar-logo {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.navbar .website-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000;
+}
+
+/* Logout Button Styling */
+.btn-logout {
+    background-color: #f7d774; /* Yellow Button */
+    color: #000;
+    font-weight: bold;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #e5c761; /* Slightly Darker Yellow */
+    color: #000;
 }
 
 /* Modal and Overlay */
@@ -82,17 +118,6 @@ input, select {
     background-color: #2980b9; /* Darker blue on hover */
 }
 
-#logout {
-    background-color: #e74c3c; /* Red color for log out button */
-    color: white;
-    font-size: 16px;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-#logout:hover {
-    background-color: #c0392b; /* Darker red on hover */
-}
 
 .modal-dialog {
     max-width: 80%;
@@ -101,6 +126,20 @@ input, select {
 }
 
 /* Custom Button Styles */
+#addNewPollFormButton {
+    background-color: purple;
+    color: white;
+}
+
+#addNewPollFormButton:hover {
+    background-color: rgb(240, 10, 240);
+    color: white;
+}
+
+.getStatistics {
+    background-color: yellow;
+}
+
 .btn-sm {
     font-size: 0.875rem;
 }
@@ -126,11 +165,31 @@ input, select {
     width: 100%;
 }
 
-/* Ensure buttons have some spacing */
-.btn {
-    width: 100%;
-    padding: 12px 15px;
-    margin-top: 10px;
+
+/* Responsive Rules and Image Layout */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.headingOne {
+    color: white;
+    padding-bottom: 50px;
+    padding-top: 100px;
+}
+
+.bojaNaslova {
+    color: #f7d774;
+}
+
+.bojaSlova {
+    color: white;
+}
+
+#finishedPolls {
+    padding-bottom: 100px;
 }
 
 /* Adjust for mobile screens */
@@ -147,7 +206,4 @@ input, select {
         font-size: 1.2rem;
     }
 
-    .btn {
-        font-size: 1rem;
-    }
 }

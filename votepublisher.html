@@ -14,7 +14,40 @@
 </head>
 <body>
     <div id="main" class="container">
-        <p class="alert alert-info text-center">Logged to the VOTE PUBLISHER panel</p>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <div class="container d-flex align-items-center justify-content-between">
+                <!-- Logo and Website Name -->
+                <div class="d-flex align-items-center">
+                    <img src="assets/logo.png" alt="Website Logo" class="navbar-logo me-2">
+                    <span class="website-name fw-bold">Voting System</span>
+                </div>
+                <!-- Logout Button -->
+                <button id="logout" class="btn btn-logout ms-3">Log out</button>
+            </div>
+        </nav>
+
+        <div class="row align-items-center rulesAndPicture" style="padding-bottom: 50px;">
+            <h1 class="text-center headingOne">Welcome to the vote publisher panel!</h1>
+            <br>
+            <!-- Image Column -->
+            <div class="col-md-6 text-center">
+                <img src="assets/publisher.svg" alt="Voter image" class="img-fluid">
+            </div>
+            <!-- Rules Column -->
+            <div class="col-md-6">
+                <h2 class="fw-bold  bojaNaslova">How to Use the Voting System</h2>
+                <ul class="rules-list bojaSlova">
+                    <li>Click on the desired active poll to view statistics</li>
+                    <li>View your polls statistics in real time</li>
+                    <li>Check completed polls in the "Finished Polls" section.</li>
+                    <li>Log out using the button in the navbar</li>
+                    <li>You pay for every transaction made!</li>
+                    <li>You can't vote for your-made voting poll!</li>
+                    <li>Once activated - can't be stopped until the time runs out!</li>
+                </ul>
+            </div>
+        </div>
 
         <div id="newPolls" class="mb-5">
             <form id="addNewPollForm" class="shadow-sm p-4 rounded bg-light">
@@ -44,21 +77,15 @@
             </form>
         </div>
 
-        <h2>Search Polls</h2>
-        <input type="text" id="searchInput" class="form-control" placeholder="Search polls...">
-
-        <h2>Active polls</h2>
+        <h2 class="bojaNaslova">Active polls</h2>
         <div id="activePolls" class="mb-5"></div>
 
-        <h2>Pending polls</h2>
+        <h2 class="bojaNaslova">Pending polls</h2>
         <div id="pendingPolls" class="mb-5"></div>
 
-        <h2>Finished polls</h2>
+        <h2 class="bojaNaslova">Finished polls</h2>
         <div id="finishedPolls"></div>
     </div>
-
-    <button id="logout" class="btn btn-danger w-100">Log out</button>
-
 
     <div class="overlay" id="overlay">
         <div class="spinner"></div>
@@ -243,11 +270,12 @@
                     border-radius: 10px;
                     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
                     text-align: center;
+                    background: linear-gradient(145deg, #f0e5f5, #f9d74b); /* Purple to Yellow gradient */
                 }
 
                 /* Close Button */
                 .closee {
-                    color: #aaa;
+                    color: #8e44ad; /* Purple close button */
                     float: right;
                     font-size: 28px;
                     font-weight: bold;
@@ -256,10 +284,16 @@
 
                 .closee:hover,
                 .closee:focus {
-                    color: #000;
+                    color: #f1c40f; /* Yellow on hover */
                     text-decoration: none;
                 }
 
+                /* Heading Styles */
+                h1, h2 {
+                    color: #8e44ad; /* Purple heading */
+                }
+
+                /* Table Styles */
                 table {
                     width: 100%;
                     border-collapse: collapse;
@@ -273,10 +307,28 @@
                 }
 
                 th {
-                    background-color: #f4f4f4;
+                    background-color: #8e44ad; /* Purple background for table headers */
+                    color: #fff; /* White text in headers */
+                }
+
+                td {
+                    background-color: #f9f9f9; /* Light background for table rows */
+                    color: #8e44ad; /* Purple text for rows */
+                }
+
+                /* Hover Effect on Rows */
+                tr:hover {
+                    background-color: #f1c40f; /* Yellow on row hover */
+                    color: #fff; /* White text on hover */
+                }
+
+                /* Text for Time Left */
+                .modal-body p {
+                    color: #8e44ad; /* Purple text for modal body */
                 }
             </style>
         `;
+
         
         // Inject CSS styles and modal content
         $("#finishedPoll").find(".modal-contentt").html(modalStyles + content);
@@ -521,50 +573,53 @@
 
         for (const [id, title, description, creatorAddress, endTimestamp, status] of activeVotingPolls) {
             active += `
-                <p>
-                    <b>${title} (ID: ${id})</b>
-                    <br />
-                    Created by: ${creatorAddress}
-                    <br />
-                    Description: ${description}
-                    <br />
-                    Status: Active
-                    <br />
-                    <button class="getStatistics" data-id="${id}">Get statistics</button>
-                </p>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="card border-light shadow-sm p-3">
+                        <h5><b>${title} (ID: ${id})</b></h5>
+                        <p><strong>Created by:</strong> ${creatorAddress}</p>
+                        <p><strong>Description:</strong> ${description}</p>
+                        <p><strong>Status:</strong> Active</p>
+                        <button class="getStatistics btn btn-info btn-block" data-id="${id}">
+                            Get statistics
+                        </button>
+                    </div>
+                </div>
             `;
         }
 
         for (const [id, title, description, creatorAddress, endTimestamp, status] of pendingVotingPolls) {
             pending += `
-                <p>
-                    <b>${title} (ID: ${id})</b>
-                    <br />
-                    Created by: ${creatorAddress}
-                    <br />
-                    Description: ${description}
-                    <br />
-                    Status: Pending
-                    <br />
-                    <button class="viewVotingPoll" data-id="${id}">View</button>
-                    <button class="deletePendingPoll" data-id="${id}">Delete Voting Poll</button>
-                </p>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="card border-warning shadow-sm p-3">
+                        <h5><b>${title} (ID: ${id})</b></h5>
+                        <p><strong>Created by:</strong> ${creatorAddress}</p>
+                        <p><strong>Description:</strong> ${description}</p>
+                        <p><strong>Status:</strong> Pending</p>
+                        <button class="viewVotingPoll btn btn-primary btn-block mb-2" data-id="${id}">
+                            View
+                        </button>
+                        <button class="deletePendingPoll btn btn-danger btn-block" data-id="${id}">
+                            Delete Voting Poll
+                        </button>
+                    </div>
+                </div>
             `;
         }
 
+
         for (const [id, title, description, creatorAddress, endTimestamp, status] of finishedVotingPolls) {
             finished += `
-                <p>
-                    <b>${title} (ID: ${id})</b>
-                    <br />
-                    Created by: ${creatorAddress}
-                    <br />
-                    Description: ${description}
-                    <br />
-                    Status: Finished
-                    <br />
-                    <button class="getStatistics" data-id="${id}">View statistics</button>
-                </p>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="card border-success shadow-sm p-3">
+                        <h5><b>${title} (ID: ${id})</b></h5>
+                        <p><strong>Created by:</strong> ${creatorAddress}</p>
+                        <p><strong>Description:</strong> ${description}</p>
+                        <p><strong>Status:</strong> Finished</p>
+                        <button class="getStatistics btn btn-info btn-block" data-id="${id}">
+                            View statistics
+                        </button>
+                    </div>
+                </div>
             `;
         }
 
