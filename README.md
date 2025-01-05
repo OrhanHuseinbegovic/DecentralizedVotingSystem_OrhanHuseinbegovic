@@ -1,2 +1,4 @@
 # DecentralizedVotingSystem_OrhanHuseinbegovic
-Hi! This is a repository for a university project!
+
+Decentralized Voting System - Made by Orhan Huseinbegović
+
