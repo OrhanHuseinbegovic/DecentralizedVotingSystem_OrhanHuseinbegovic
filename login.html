@@ -50,11 +50,11 @@
         let address = localStorage.getItem("address");
 
         if(votePublisher == "true"){
-            window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
+            window.location.href = 'https://orhanhuseinbegovic.github.io/DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
             console.log("Redirected to the Vote Publisher Panel");
         }
         if(voter == "true") {
-            window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/voter.html';
+            window.location.href = 'https://orhanhuseinbegovic.github.io/DecentralizedVotingSystem_OrhanHuseinbegovic/voter.html';
             console.log("Redirected to the Voter Panel");
         }
     };
@@ -97,7 +97,7 @@
                 localStorage.setItem("voter", "false");
                 localStorage.setItem("address", selectedAccount);
 
-                window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
+                window.location.href = 'https://orhanhuseinbegovic.github.io/DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
             } else {
                 toastr.error("MetaMask is not installed. Please install it to continue.");
             }
@@ -132,7 +132,7 @@
                 localStorage.setItem("votepublisher", "false");
                 localStorage.setItem("address", selectedAccount);
 
-                window.location.href = 'http://localhost:8888//DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
+                window.location.href = 'https://orhanhuseinbegovic.github.io/DecentralizedVotingSystem_OrhanHuseinbegovic/votepublisher.html';
             } else {
                 toastr.error("MetaMask is not installed. Please install it to continue.");
             }
