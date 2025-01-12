@@ -47,14 +47,14 @@
             <div class="col-md-6">
                 <h2 class="fw-bold  bojaNaslova">How to Use the Voting System</h2>
                 <ul class="rules-list bojaSlova">
-                    <li>Search for active polls using the search bar.</li>
+                    <li>Search for polls using the search bar.</li>
                     <li>Click on the desired poll to view statistics and vote.</li>
                     <li>View your voted polls in the "Active Voted-For Polls" section.</li>
                     <li>Check completed polls in the "Finished Polls" section.</li>
                     <li>Log out using the button in the navbar</li>
                     <li>You can't vote twice for the same poll!</li>
                     <li>You can't vote for your-made voting poll!</li>
-                    <li>Every vote costs you ETH!</li>
+                    <li>Every vote costs you SepoliaETH!</li>
                 </ul>
             </div>
         </div>
@@ -117,8 +117,8 @@
     const address = "0xcc6e8030938a91631d0ce8d86506b08d06f52d50";
 
     document.querySelector('.close').addEventListener('click', function() {
-    document.getElementById('votingOptionsModal').style.display = 'none';
-});
+        document.getElementById('votingOptionsModal').style.display = 'none';
+    });
 
 
     function checkLogin(){
@@ -297,49 +297,49 @@
     }
 
     $(document).on("click", ".viewButton", async function () {
-    window.signer = await window.provider.getSigner();
-    const contract = new ethers.Contract(address, abi, window.signer);
+        window.signer = await window.provider.getSigner();
+        const contract = new ethers.Contract(address, abi, window.signer);
 
-    const pollId = $(this).data("id");
+        const pollId = $(this).data("id");
 
-    const pollName = await contract.getVotingPollName(pollId);
-    const description = await contract.getVotingPollDescription(pollId);
-    const pollTime = await contract.getVotingPollTime(pollId);
+        const pollName = await contract.getVotingPollName(pollId);
+        const description = await contract.getVotingPollDescription(pollId);
+        const pollTime = await contract.getVotingPollTime(pollId);
 
-    console.log("Poll ID:", pollId);
-    let votingOptions = await contract.getAllVotingOptions(pollId);
-    let options = '';
+        console.log("Poll ID:", pollId);
+        let votingOptions = await contract.getAllVotingOptions(pollId);
+        let options = '';
 
-    for (const [id, name, voteCount] of votingOptions) {
-        options += `
-            <p>
-                <b>${name} (ID: ${id})</b>
-                <br />
-                <button class="vote btn btn-purple" data-id="${id}" data-poll-id="${pollId}">
-                    Vote
+        for (const [id, name, voteCount] of votingOptions) {
+            options += `
+                <p>
+                    <b>${name} (ID: ${id})</b>
+                    <br />
+                    <button class="vote btn btn-purple" data-id="${id}" data-poll-id="${pollId}">
+                        Vote
+                    </button>
+                </p>
+            `;
+        }
+
+        $("#votingOptionsModal").find(".modal-content").html(`
+            <div class="modal-body text-center">
+                <h2 class="h4 mb-3">Voting Poll Details</h2>
+                <p class="mb-3">Poll ID: ${pollId}</p>
+                <p class="mb-3">Poll Name: ${pollName}</p>
+                <p class="mb-3">Poll description: ${description}</p>
+                <div class="mt-4">
+                    <h2 class="h5 mb-3">Voting options for this poll</h2>
+                    ${options}
+                </div>
+                <button class="getStatistics btn btn-warning mt-3" data-id="${pollId}">
+                    Get statistics
                 </button>
-            </p>
-        `;
-    }
-
-    $("#votingOptionsModal").find(".modal-content").html(`
-        <div class="modal-body text-center">
-            <h2 class="h4 mb-3">Voting Poll Details</h2>
-            <p class="mb-3">Poll ID: ${pollId}</p>
-            <p class="mb-3">Poll Name: ${pollName}</p>
-            <p class="mb-3">Poll description: ${description}</p>
-            <div class="mt-4">
-                <h2 class="h5 mb-3">Voting options for this poll</h2>
-                ${options}
             </div>
-            <button class="getStatistics btn btn-warning mt-3" data-id="${pollId}">
-                Get statistics
-            </button>
-        </div>
-    `);
+        `);
 
-    $("#votingOptionsModal").fadeIn();
-});
+        $("#votingOptionsModal").fadeIn();
+    });
 
 
     $(document).on("click", ".vote", async function () {
@@ -444,7 +444,6 @@
             ${time}
         `;
 
-        // Insert CSS for modal inside the modal content
         // Insert CSS for modal inside the modal content
         const modalStyles = `
             <style>
@@ -568,30 +567,47 @@
         });
     });
 
-    document.addEventListener("input", (event) => {
-    if (event.target.id === "searchActivePolls") {
-        filterPolls("activePolls", event.target.value);
-    } else if (event.target.id === "searchVotedPolls") {
-        filterPolls("votedPolls", event.target.value);
-    } else if (event.target.id === "searchFinishedPolls") {
-        filterPolls("finishedPolls", event.target.value);
-    }
-    });
 
-    function filterPolls(sectionId, query) {
-    const section = document.getElementById(sectionId);
-    const polls = section.querySelectorAll(".poll-card");
-    const lowerCaseQuery = query.toLowerCase();
 
-    polls.forEach((poll) => {
-        const text = poll.textContent.toLowerCase();
-        if (text.includes(lowerCaseQuery)) {
-        poll.style.display = "block";
-        } else {
-        poll.style.display = "none";
-        }
-    });
+    function filterPolls(searchInputId, pollListId) {
+        const searchInput = document.getElementById(searchInputId);
+        const pollList = document.getElementById(pollListId);
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            const polls = pollList.getElementsByClassName('poll-card');
+
+            Array.from(polls).forEach(poll => {
+                const text = poll.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    poll.style.display = 'block'; // Show matching polls
+                } else {
+                    poll.style.display = 'none'; // Hide non-matching polls
+                }
+            });
+
+            // Show a "No results found" message if nothing matches
+            if (!Array.from(polls).some(poll => poll.style.display === 'block')) {
+                if (!pollList.querySelector('.no-results')) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'no-results';
+                    noResults.style.color = 'white';
+                    noResults.style.textAlign = 'center';
+                    noResults.textContent = 'No results found.';
+                    pollList.appendChild(noResults);
+                }
+            } else {
+                const noResults = pollList.querySelector('.no-results');
+                if (noResults) {
+                    noResults.remove();
+                }
+            }
+        });
     }
+
+    filterPolls('searchActive', 'activePolls');
+    filterPolls('searchVoted', 'votedPolls');
+    filterPolls('searchFinished', 'finishedPolls');
 
 
 

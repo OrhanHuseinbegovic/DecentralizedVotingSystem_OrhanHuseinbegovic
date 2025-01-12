@@ -65,6 +65,7 @@
                 console.log("Account changed:", accounts[0]);
                 localStorage.setItem("address", accounts[0]);
                 toastr.info("Account changed to: " + accounts[0]);
+
                 // Optionally I should reload or re-authenticate or maybe redirect the user 
             } else {
                 console.warn("MetaMask disconnected. Please connect again.");

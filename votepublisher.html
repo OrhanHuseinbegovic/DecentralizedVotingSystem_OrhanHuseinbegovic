@@ -373,33 +373,103 @@
         
         for (const [id, name, voteCount] of votingOptions) {
             options += `
-                <p>
-                    <b>${name} (ID: ${id})</b>
-                    <br />
-                    <button class="deleteVotingOption" data-id="${id}" data-poll-id="${pollId}">Delete</button>
-                </p>
+                <div style="
+                    background-color: rgba(255, 255, 255, 0.2); 
+                    padding: 10px; 
+                    border-radius: 8px; 
+                    margin-bottom: 15px; 
+                    color: white; 
+                    font-size: 16px;
+                    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+                ">
+                    <p style="margin: 0;">
+                        <b>${name} (ID: ${id})</b>
+                    </p>
+                    <p style="margin: 5px 0;">Votes: ${voteCount}</p>
+                    <button class="deleteVotingOption" data-id="${id}" data-poll-id="${pollId}" style="
+                        background-color: #d32f2f; 
+                        color: white; 
+                        padding: 8px 12px; 
+                        border: none; 
+                        border-radius: 5px; 
+                        cursor: pointer; 
+                        font-size: 14px; 
+                        box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.2);
+                        transition: all 0.3s;
+                    " onmouseover="this.style.backgroundColor='#9a0007'" onmouseout="this.style.backgroundColor='#d32f2f'">Delete</button>
+                </div>
             `;
         }
 
+
         $("#myModal").find(".modal-content").html(`
-            <h2>Voting Poll Details</h2>
-            <p>Poll ID: ${pollId}</p>
-            <p>Poll Name: ${pollName}</p>
-            <p>Poll description: ${description}</p>
-            <p>${time}</p>
-            <form id="addVotingOptionForm">
-                <label for="optionName">Voting option name: </label>
-                <input type="text" name="optionName" id="optionName" required />
-                <input type="hidden" name="pollId" id="pollId" value="${pollId}" />
-                <button type="button" class="addVotingOption">Add Voting Option</button>
-            </form>
-            <div>
-                <h2>Current Voting options</h2>
-                ${options}
-                <button type="button" class="startVotingPoll" data-poll-id="${pollId}">Start Voting Poll</button>
-                <button class="deletePendingPoll" data-id="${pollId}">Delete Voting Poll</button>
+            <div style="
+                padding: 20px; 
+                border-radius: 10px; 
+                background: linear-gradient(135deg, yellow, purple); 
+                color: white; 
+                font-family: Arial, sans-serif; 
+                text-align: center;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            ">
+                <h2 style="margin-bottom: 20px; font-size: 24px; font-weight: bold;">Voting Poll Details</h2>
+                <p style="margin: 5px 0; font-size: 18px;">Poll ID: ${pollId}</p>
+                <p style="margin: 5px 0; font-size: 18px;">Poll Name: ${pollName}</p>
+                <p style="margin: 5px 0; font-size: 18px;">Poll description: ${description}</p>
+                <p style="margin: 10px 0; font-size: 16px;">${time}</p>
+                <form id="addVotingOptionForm" style="margin: 20px 0;">
+                    <label for="optionName" style="display: block; margin-bottom: 10px; font-size: 16px;">Voting option name:</label>
+                    <input type="text" name="optionName" id="optionName" required style="
+                        width: 100%; 
+                        padding: 10px; 
+                        border: 1px solid #ccc; 
+                        border-radius: 5px; 
+                        margin-bottom: 15px;
+                        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+                    " />
+                    <input type="hidden" name="pollId" id="pollId" value="${pollId}" />
+                    <button type="button" class="addVotingOption" style="
+                        background-color: #ffae00; 
+                        color: white; 
+                        padding: 10px 15px; 
+                        border: none; 
+                        border-radius: 5px; 
+                        cursor: pointer;
+                        font-size: 16px;
+                        box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.2);
+                        transition: all 0.3s;
+                    " onmouseover="this.style.backgroundColor='#cc8800'" onmouseout="this.style.backgroundColor='#ffae00'">Add Voting Option</button>
+                </form>
+                <div>
+                    <h2 style="margin-bottom: 20px; font-size: 24px; font-weight: bold;">Current Voting options</h2>
+                    <div style="margin-bottom: 20px; font-size: 16px;">${options}</div>
+                    <button type="button" class="startVotingPoll" data-poll-id="${pollId}" style="
+                        background-color: #6a1b9a; 
+                        color: white; 
+                        padding: 10px 20px; 
+                        border: none; 
+                        border-radius: 5px; 
+                        cursor: pointer;
+                        font-size: 16px;
+                        margin-right: 10px;
+                        box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.2);
+                        transition: all 0.3s;
+                    " onmouseover="this.style.backgroundColor='#520d74'" onmouseout="this.style.backgroundColor='#6a1b9a'">Start Voting Poll</button>
+                    <button class="deletePendingPoll" data-id="${pollId}" style="
+                        background-color: #d32f2f; 
+                        color: white; 
+                        padding: 10px 20px; 
+                        border: none; 
+                        border-radius: 5px; 
+                        cursor: pointer;
+                        font-size: 16px;
+                        box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.2);
+                        transition: all 0.3s;
+                    " onmouseover="this.style.backgroundColor='#9a0007'" onmouseout="this.style.backgroundColor='#d32f2f'">Delete Voting Poll</button>
+                </div>
             </div>
         `);
+
 
         $("#myModal").fadeIn();
     });
@@ -447,16 +517,6 @@
             const endTime = await contract.getVotingPollTime(pollId);
             const pollName = await contract.getVotingPollName(pollId);
             console.log("Transaction sent:", tx.hash);
-
-            const endTimeMs = Number(endTime) * 1000;
-            const currentTime = Date.now();
-
-            const timeLeft = endTimeMs - currentTime;
-
-            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
             const receipt = await tx.wait();
             //endTime.wait();
             //pollName.wait();
@@ -464,7 +524,7 @@
 
             getAllVotingPolls();
             $("#myModal").fadeOut();
-            toastr.success(`Voting poll with name ${pollName} successfully started! Poll ends in ${hours} hours, ${minutes} minutes and ${seconds} seconds}`);
+            toastr.success(`Voting poll with name ${pollName} successfully started!`);
         } catch (error) {
             console.error("Error starting poll:", error);
             toastr.error("Failed to start the poll. Please try again.");
@@ -644,29 +704,6 @@
         console.log("Data displayed!");
         toggleOverlay()
     }
-
-        const searchInput = document.getElementById("searchInput");
-        const pollContainer = document.getElementById("activePolls");
-
-        // Listen for input changes
-        searchInput.addEventListener("input", function () {
-            const query = searchInput.value.toLowerCase(); // Convert search query to lowercase
-            const polls = pollContainer.getElementsByTagName("p"); // Get all poll <p> elements
-
-            // Loop through all polls
-            for (let poll of polls) {
-                const title = poll.querySelector("b").innerText.toLowerCase(); // Get title text
-                const creator = poll.innerText.toLowerCase(); // Full inner text (includes creator address)
-
-                // Check if query matches title, creator, or any relevant text
-                if (title.includes(query) || creator.includes(query)) {
-                    poll.classList.remove("hidden"); // Show the poll
-                } else {
-                    poll.classList.add("hidden"); // Hide the poll
-                }
-            }
-        });
-    
 
 </script>
 </html>
